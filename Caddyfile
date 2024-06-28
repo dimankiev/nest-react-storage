@@ -1,0 +1,10 @@
+{
+  auto_https disable_certs
+}
+
+:80 {
+  @api-path path /api/*
+  @gui-path not path /api/*
+  reverse_proxy @api-path backend:3000
+  reverse_proxy @gui-path frontend:8080
+}
