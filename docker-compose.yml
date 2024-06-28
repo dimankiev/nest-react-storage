@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   frontend:
+    container_name: app_frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -9,9 +10,12 @@ services:
       - NODE_ENV=production
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
     networks:
-      - internal
+      - app_network
+    depends_on:
+      - backend
 
   backend:
+    container_name: app_backend
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -19,32 +23,48 @@ services:
       - NODE_ENV=production
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - REDIS_HOST=redis
+      - REDIS_HOST=app_redis
       - REDIS_PORT=6379
     networks:
-      - internal
+      - app_network
+    depends_on:
+      redis:
+        condition: service_healthy
 
   redis:
+    container_name: app_redis
     image: redis:alpine
     networks:
-      - internal
+      - app_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   caddy:
+    container_name: app_caddy
     image: caddy:2-alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:8080"
+      - "8443:8443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
     networks:
-      - internal
+      - app_network
+    depends_on:
+      - frontend
+      - backend
 
 networks:
-  internal:
+  app_network:
+    name: app_network
     driver: bridge
 
 volumes:
   caddy_data:
+    name: app_caddy_data
   caddy_config:
+    name: app_caddy_config
