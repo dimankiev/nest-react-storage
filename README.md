@@ -1,6 +1,8 @@
 # Nest.js + React (Next.js) Storage App
 
-This repository contains deployment scripts for web storage application built with Next.js for the frontend and NestJS for the backend, using Redis for session storage and Caddy as a reverse proxy.
+This repository contains deployment scripts for web storage application built with Next.js for the frontend and NestJS for the backend, using Redis for session storage and Caddy as a reverse proxy.  
+ - [Next.js + React Storage App UI](https://github.com/dimankiev/nest-react-storage-ui)
+ - [Nest.js Storage App API](https://github.com/dimankiev/nest-react-storage-api)
 
 ## Prerequisites
 
